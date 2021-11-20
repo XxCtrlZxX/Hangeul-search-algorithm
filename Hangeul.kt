@@ -6,11 +6,15 @@ class Hangeul {
         private val MiddleSound = arrayOf('ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ')
         private val FinalSound = arrayOf(null, 'ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ')
 
+//        fun finalRange(
+//            s: String,
+//            finalSound: Char
+//        ):
+
         fun getInitSound(
             c: Char
         ): Char? {
-            if (c !in '가'..'힣')
-                return null // 한글이 아니면 종료
+            if (c !in '가'..'힣') return null // 한글이 아니면 종료
             return InitSound[(c - init).code / 28 / 21]
         }
 
@@ -23,6 +27,7 @@ class Hangeul {
         fun getFinalSound(
             c: Char
         ): Char? {
+            if (c !in '가'..'힣') return null
             return FinalSound[(c - init).code % 28]
         }
     }
