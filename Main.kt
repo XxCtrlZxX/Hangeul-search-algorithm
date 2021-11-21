@@ -1,3 +1,4 @@
+import Hangeul.Companion.convertHangeulFinalSound
 import Hangeul.Companion.getInitSound
 import Hangeul.Companion.getFinalSound
 
@@ -14,6 +15,8 @@ fun main() {
         it.matchHangeul(compareString)
     }
     println(findArr)
+
+    println(convertHangeulFinalSound('ㄼ', "갋"))
 }
 
 fun String.matchHangeul(
@@ -40,10 +43,16 @@ fun String.matchHangeul(
         }
     }
 
-
     // 마지막 글자에 받침이 있으면
     getFinalSound(compare[compare.lastIndex])?.let {
         return compare in targetString || TODO()
     }
+    return false
+}
+
+fun String.compareInitSound(
+    s: String
+): Boolean {
+
     return false
 }
