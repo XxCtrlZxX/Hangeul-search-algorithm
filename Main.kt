@@ -1,6 +1,6 @@
-import Hangeul.Companion.convertHangeulFinalSound
-import Hangeul.Companion.getInitSound
-import Hangeul.Companion.getFinalSound
+import HangeulUtil.Companion.convertHangeulFinalSound
+import HangeulUtil.Companion.getFinalSound
+import HangeulUtil.Companion.getInitSound
 
 fun main() {
     // 검색 될 문자열
@@ -9,29 +9,31 @@ fun main() {
     val arr2 = arr.map { it.replace(" ", "") }
 
     // 비교할 문자열
-    val compareString = "Cㅁ"
+    val compareString = "징"
 
     val findArr = arr2.filter {
-        it.matchHangeul(compareString)
+        it.upgradedContains(compareString)
     }
-    println(findArr)
 
-    println(convertHangeulFinalSound('ㄼ', "갋"))
+    println(findArr)
 }
 
-fun String.matchHangeul(
-    compare: String
-): Boolean {
-    val targetString = this
+
+fun String.upgradedContains(s: String):
+        Boolean = this.contains(s) || this.containsHangeul(s) || this.asdf(s)
+
+
+fun String.containsHangeul(s: String): Boolean {
 
     // 입력된 문자열 중 초성이 하나라도 있으면
-    if (compare.any { it in 'ㄱ'..'ㅎ' }) {
-        val range = targetString.length - compare.length
+    if (s.any { it in 'ㄱ'..'ㅎ' }) {
+        val targetString = this
+        val range = targetString.length - s.length
 
         // 맞는 조합이 하나라도 있으면 true
         return (0..range).any { i ->
             var t = i
-            return@any compare.all {
+            return@any s.all {
                 when (it) {
                     in 'ㄱ'..'ㅎ' -> { // 초성이면 초성끼리만 비교
                         val targetInit = getInitSound(targetString[t++])
@@ -42,17 +44,15 @@ fun String.matchHangeul(
             }
         }
     }
-
-    // 마지막 글자에 받침이 있으면
-    getFinalSound(compare[compare.lastIndex])?.let {
-        return compare in targetString || TODO()
-    }
     return false
 }
 
-fun String.compareInitSound(
-    s: String
-): Boolean {
-
+// TODO: 이름을 뭐라고 짓지
+fun String.asdf(s: String): Boolean {
+    // 마지막 글자에 받침이 있으면
+    getFinalSound(s.last())?.let {
+        val convertedString = convertHangeulFinalSound(s)
+        return this.containsHangeul(convertedString)
+    }
     return false
 }
