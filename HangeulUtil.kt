@@ -25,14 +25,18 @@ class HangeulUtil {
         private fun middleIndex(c: Char) = (c - init).code / 28 % 21
         private fun finalIndex(c: Char) = (c - init).code % 28
 
-        private fun splitSound(consonant: Char):
+        fun splitSound(consonant: Char):
                 Pair<Char, Char>? = splittedMap.getOrDefault(consonant, null)
 
-        private fun isCompleteHangeul(c: Char):
+        fun isCompleteHangeul(c: Char):
                 Boolean = c in '가'..'힣'
 
-        private fun isHangeul(c: Char):
+        fun isHangeul(c: Char):
                 Boolean = isCompleteHangeul(c) || c in 'ㄱ'..'ㅎ' || c in 'ㅏ'..'ㅣ'
+
+        // 종성이 있는지
+        fun haveFinalSound(c: Char):
+                Boolean = getFinalSound(c)?.let { true } ?: false
 
         fun getInitSound(c: Char):
                 Char? = if (isCompleteHangeul(c)) InitSound[initIndex(c)] else null
@@ -48,9 +52,9 @@ class HangeulUtil {
         // ex: "가낙" -> "가나ㄱ", "가낣" -> "가날ㅂ"
         fun convertHangeulFinalSound(s: String): String {
             val frontString = s.substring(0 until s.lastIndex)
-            val lastChar = s.last()
-            val finalSound = getFinalSound(lastChar)
-            val excludedLastChar = deleteFinalSound(lastChar)
+            val lastLetter = s.last()
+            val finalSound = getFinalSound(lastLetter)
+            val excludedLastChar = deleteFinalSound(lastLetter)
 
             return when (finalSound) {
                 'ㄳ','ㄵ','ㄶ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅄ' ->
@@ -65,15 +69,13 @@ class HangeulUtil {
 
         // 종성 제외
         // ex: '각' -> '가'
-        private fun deleteFinalSound(c: Char):
-                Char = getFinalSound(c)?.let { c - finalIndex(c) }
-            ?: throw HangeulException()
+        fun deleteFinalSound(c: Char):
+                Char = if (haveFinalSound(c)) c - finalIndex(c) else c
 
         // 종성 추가
-        private fun addFinalSound(c: Char, finalSound: Char): Char {
-            getFinalSound(c)?.let {
+        fun addFinalSound(c: Char, finalSound: Char): Char {
+            if (haveFinalSound(c))
                 throw HangeulException("The Hangeul character '$c' already have finalSound")
-            }
             return (c.code + FinalSound.indexOf(finalSound)).toChar()
         }
     }
