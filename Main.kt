@@ -5,22 +5,22 @@ import HangeulUtil.Companion.getInitSound
 fun main() {
     // 검색 될 문자열
     val arr = arrayOf("지옥", "월식", "건국대", "페이커", "미세먼지", "ABC마트", "브다샤펄", "대성", "인천 여경", "구구대")
-    // 띄어쓰기 없애기
-    val arr2 = arr.map { it.replace(" ", "") }
 
-    // 비교할 문자열
-    val compareString = "징"
+    // 비교할 문자열 (입력된 검색어)
+    val compareString = "밋"
 
-    val findArr = arr2.filter {
+    val searchedArr = arr.map {
+        it.replace(" ", "") // 띄어쓰기 없애기
+    }.filter {
         it.upgradedContains(compareString)
     }
 
-    println(findArr)
+    println(searchedArr)
 }
 
 
 fun String.upgradedContains(s: String):
-        Boolean = this.contains(s) || this.containsHangeul(s) || this.asdf(s)
+        Boolean = this.contains(s) || this.containsHangeul(s) || this.separateFinalSoundAndContains(s)
 
 
 fun String.containsHangeul(s: String): Boolean {
@@ -47,8 +47,7 @@ fun String.containsHangeul(s: String): Boolean {
     return false
 }
 
-// TODO: 이름을 뭐라고 짓지
-fun String.asdf(s: String): Boolean {
+fun String.separateFinalSoundAndContains(s: String): Boolean {
     // 마지막 글자에 받침이 있으면
     getFinalSound(s.last())?.let {
         val convertedString = convertHangeulFinalSound(s)

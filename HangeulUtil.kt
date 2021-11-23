@@ -1,3 +1,5 @@
+class HangeulException(msg: String = "Invalid Hangeul"): Exception(msg)
+
 class HangeulUtil {
     companion object {
         private const val init = 0xAC00 // 한글 시작점
@@ -26,17 +28,20 @@ class HangeulUtil {
         private fun splitSound(consonant: Char):
                 Pair<Char, Char>? = splittedMap.getOrDefault(consonant, null)
 
-        private fun isHangeul(c: Char):
+        private fun isCompleteHangeul(c: Char):
                 Boolean = c in '가'..'힣'
 
+        private fun isHangeul(c: Char):
+                Boolean = isCompleteHangeul(c) || c in 'ㄱ'..'ㅎ' || c in 'ㅏ'..'ㅣ'
+
         fun getInitSound(c: Char):
-                Char? = if (isHangeul(c)) InitSound[initIndex(c)] else null
+                Char? = if (isCompleteHangeul(c)) InitSound[initIndex(c)] else null
 
         fun getMiddleSound(c: Char):
-                Char? = if (isHangeul(c)) MiddleSound[middleIndex(c)] else null
+                Char? = if (isCompleteHangeul(c)) MiddleSound[middleIndex(c)] else null
 
         fun getFinalSound(c: Char):
-                Char? = if (isHangeul(c)) FinalSound[finalIndex(c)] else null
+                Char? = if (isCompleteHangeul(c)) FinalSound[finalIndex(c)] else null
 
 
         // 종성 연음된 문자열로 변환
@@ -50,7 +55,7 @@ class HangeulUtil {
             return when (finalSound) {
                 'ㄳ','ㄵ','ㄶ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅄ' ->
                 {
-                    val pair = splitSound(finalSound)?.toList() ?: return s
+                    val pair = splitSound(finalSound)?.toList() ?: throw HangeulException()
                     val newLastChar = addFinalSound(excludedLastChar, pair[0]) // 종성 하나만 추가
                     frontString + newLastChar + pair[1]
                 }
@@ -61,16 +66,13 @@ class HangeulUtil {
         // 종성 제외
         // ex: '각' -> '가'
         private fun deleteFinalSound(c: Char):
-                Char = c - finalIndex(c)
+                Char = getFinalSound(c)?.let { c - finalIndex(c) }
+            ?: throw HangeulException()
 
         // 종성 추가
-        // * c에는 종성이 없는 한글이 와야 함
-        private fun addFinalSound(
-            c: Char,
-            finalSound: Char
-        ): Char {
+        private fun addFinalSound(c: Char, finalSound: Char): Char {
             getFinalSound(c)?.let {
-                throw Exception("The Hangeul character '$c' already have finalSound")
+                throw HangeulException("The Hangeul character '$c' already have finalSound")
             }
             return (c.code + FinalSound.indexOf(finalSound)).toChar()
         }
