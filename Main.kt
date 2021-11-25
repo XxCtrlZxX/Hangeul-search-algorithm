@@ -19,7 +19,7 @@ fun main() {
 
 
 fun String.superContains(s: String):
-        Boolean = this.contains(s) || this.containsHangeulOrInitial(s)
+        Boolean = this.contains(s) || this.containsHangeulOrInitial(s) || this.containsReallocatedHangeul(s)
 
 
 fun String.containsHangeulOrInitial(s: String): Boolean {
@@ -42,7 +42,7 @@ fun String.containsHangeulOrInitial(s: String): Boolean {
             }
         }
     }
-    return this.containsReallocatedHangeul(s)
+    return false
 }
 
 // 한글을 영어로 바꿔서 비교

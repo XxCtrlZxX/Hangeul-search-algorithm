@@ -20,9 +20,6 @@ class HangeulUtil {
         private fun middleIndex(c: Char) = (c - init).code / 28 % 21
         private fun finalIndex(c: Char) = (c - init).code % 28
 
-        fun splitDoubleConsonant(doubleConsonant: Char):
-                Pair<Char, Char>? = doubleConsonantsMap.getOrDefault(doubleConsonant, null)
-
         fun isCompleteHangeul(c: Char):
                 Boolean = c in '가'..'힣'
 
@@ -66,6 +63,9 @@ class HangeulUtil {
                 else -> frontString + excludedLastChar + finalSound
             }
         }
+
+        fun splitDoubleConsonant(doubleConsonant: Char):
+                Pair<Char, Char>? = doubleConsonantsMap[doubleConsonant]
 
         // 종성 제외
         // ex: '각' -> '가'
