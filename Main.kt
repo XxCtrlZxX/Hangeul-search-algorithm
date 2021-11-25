@@ -1,8 +1,5 @@
-import HangeulUtil.Companion.convertHangeulFinalSound
-import HangeulUtil.Companion.deleteFinalSound
 import HangeulUtil.Companion.getInitSound
-import HangeulUtil.Companion.haveFinalSound
-import HangeulUtil.Companion.isHangeul
+import HangeulReallocateUtil.Companion.reallocateHangeul
 
 fun main() {
     // 검색 될 문자열
@@ -14,21 +11,20 @@ fun main() {
     val searchedArr = arr.map {
         it.replace(" ", "") // 띄어쓰기 없애기
     }.filter {
-        it.upgradedContains(compareString)
+        it.superContains(compareString)
     }
 
     println(searchedArr)
 }
 
 
-fun String.upgradedContains(s: String):
-        Boolean = this.contains(s) || this.containsHangeulOrInitial(s) || this.checkLastHangeulLetter(s)
+fun String.superContains(s: String):
+        Boolean = this.contains(s) || this.containsHangeulOrInitial(s)
 
 
 fun String.containsHangeulOrInitial(s: String): Boolean {
-
-    // 문자열 중 한글이 있으면
-    if (s.any { isHangeul(it) }) {
+    // 문자열 중 초성이 있으면
+    if (s.any { it in 'ㄱ'..'ㅎ' }) {
         val targetString = this
         val range = targetString.length - s.length
 
@@ -37,33 +33,30 @@ fun String.containsHangeulOrInitial(s: String): Boolean {
             var t = i
             return@any s.all {
                 when (it) {
-                    in 'ㄱ'..'ㅎ' -> { // 초성이면 초성끼리만 비교
+                    in 'ㄱ'..'ㅎ' -> { // 초성은 초성끼리만 비교
                         val targetInitial = getInitSound(targetString[t++])
                         return@all it == targetInitial
                     }
-                    else -> {
-                        if (it == s.last() && !haveFinalSound(it)) {
-                            // it이 s의 마지막 글자이고 종성이 없을 때
-                            val deletedTargetFinalSound = deleteFinalSound(targetString[t++])
-                            return@all it == deletedTargetFinalSound
-                        }
-                        return@all it == targetString[t++]
-                    }
+                    else -> return@all it == targetString[t++]
                 }
             }
         }
     }
-    return false
+    return this.containsReallocatedHangeul(s)
 }
 
-fun String.checkLastHangeulLetter(s: String): Boolean {
+// 한글을 영어로 바꿔서 비교
+fun String.containsReallocatedHangeul(s: String): Boolean {
+    val targetString = reallocateHangeul(this)
+    val compareString = reallocateHangeul(s)
+    return targetString.contains(compareString)
+}
+
+/*fun String.checkLastHangeulLetter(s: String): Boolean {
     // 마지막 글자에 받침이 있으면
     if (haveFinalSound(s.last())) {
         val convertedString = convertHangeulFinalSound(s)
         return this.containsHangeulOrInitial(convertedString)
     }
     return false
-}
-
-// TODO: 그냥 한글을 영어로 바꿔서 비교하는 방식은..?
-// ex: 가나다 -> rkskek
+}*/
