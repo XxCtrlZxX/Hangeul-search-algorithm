@@ -1,6 +1,3 @@
-import HangeulUtil.Companion.getInitSound
-import HangeulReallocateUtil.Companion.reallocateHangeul
-
 fun main() {
     // 검색 될 문자열
     val arr = arrayOf("지옥", "월식", "건국대", "페이커", "미세먼지", "ABC마트", "브다샤펄", "대성", "인천 여경", "구구대")
@@ -19,7 +16,7 @@ fun main() {
 
 
 fun String.superContains(s: String):
-        Boolean = this.contains(s) || this.containsHangeulOrInitial(s) || this.containsReallocatedHangeul(s)
+        Boolean = this.contains(s) || this.containsHangeulOrInitial(s) || this.containsHangeulAlphabets(s)
 
 
 fun String.containsHangeulOrInitial(s: String): Boolean {
@@ -34,7 +31,7 @@ fun String.containsHangeulOrInitial(s: String): Boolean {
             return@any s.all {
                 when (it) {
                     in 'ㄱ'..'ㅎ' -> { // 초성은 초성끼리만 비교
-                        val targetInitial = getInitSound(targetString[t++])
+                        val targetInitial = Hangeul.InitSound.of(targetString[t++])
                         return@all it == targetInitial
                     }
                     else -> return@all it == targetString[t++]
@@ -45,18 +42,10 @@ fun String.containsHangeulOrInitial(s: String): Boolean {
     return false
 }
 
-// 한글을 영어로 바꿔서 비교
-fun String.containsReallocatedHangeul(s: String): Boolean {
-    val targetString = reallocateHangeul(this)
-    val compareString = reallocateHangeul(s)
+// 한글을 알파벳으로 바꿔서 비교
+// TODO: 기능 추가
+fun String.containsHangeulAlphabets(s: String): Boolean {
+    val targetString = Hangeul.KeyboardMapping.toAlphabets(this)
+    val compareString = Hangeul.KeyboardMapping.toAlphabets(s)
     return targetString.contains(compareString)
 }
-
-/*fun String.checkLastHangeulLetter(s: String): Boolean {
-    // 마지막 글자에 받침이 있으면
-    if (haveFinalSound(s.last())) {
-        val convertedString = convertHangeulFinalSound(s)
-        return this.containsHangeulOrInitial(convertedString)
-    }
-    return false
-}*/
