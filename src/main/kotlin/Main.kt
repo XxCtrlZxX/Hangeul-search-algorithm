@@ -16,12 +16,12 @@ fun main() {
 
 
 fun String.superContains(s: String):
-        Boolean = this.contains(s) || this.containsHangeulOrInitial(s) || this.containsHangeulAlphabets(s)
+        Boolean = contains(s) || compareHangeulInitial(s) || containsHangeulAlphabets(s)
 
 
-fun String.containsHangeulOrInitial(s: String): Boolean {
-    // 문자열 중 초성이 있으면
-    if (s.any { it in 'ㄱ'..'ㅎ' }) {
+fun String.compareHangeulInitial(s: String): Boolean {
+    // 문자열이 모두 초성으로 되어있으면
+    if (s.all { it in 'ㄱ'..'ㅎ' }) {
         val targetString = this
         val range = targetString.length - s.length
 
@@ -45,7 +45,7 @@ fun String.containsHangeulOrInitial(s: String): Boolean {
 // 한글을 알파벳으로 바꿔서 비교
 // TODO: 기능 추가
 fun String.containsHangeulAlphabets(s: String): Boolean {
-    val targetString = Hangeul.KeyboardMapping.toAlphabets(this)
-    val compareString = Hangeul.KeyboardMapping.toAlphabets(s)
+    val targetString = toAlphabets(this)
+    val compareString = toAlphabets(s)
     return targetString.contains(compareString)
 }

@@ -1,6 +1,6 @@
 object Hangeul {
     private interface ExtractSound {
-        fun of(c: Char) : Char
+        fun of(c: Char) : Char?
         fun index(c: Char) : Int
     }
 
@@ -35,10 +35,10 @@ object Hangeul {
     }
 
     object FinalSound : ExtractSound {
-        override fun of(c: Char): Char {
+        override fun of(c: Char): Char? {
             return if (Check.isCompleteHangeul(c) && have(c)) {
-                finalSound[index(c)]!!
-            } else 0.toChar()
+                finalSound[index(c)]
+            } else null
         }
 
         override fun index(c: Char) = (c - hangeulInit).code % 28
@@ -46,7 +46,4 @@ object Hangeul {
         // 종성이 있는지
         fun have(c: Char): Boolean = index(c) != 0  // index가 0이면 받침 없는 거
     }
-
-    object KeyboardMapping
-    object Util
 }
