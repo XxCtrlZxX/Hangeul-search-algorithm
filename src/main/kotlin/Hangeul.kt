@@ -44,6 +44,26 @@ object Hangeul {
         override fun index(c: Char) = (c - hangeulInit).code % 28
 
         // 종성이 있는지
-        fun have(c: Char): Boolean = index(c) != 0  // index가 0이면 받침 없는 거
+        private fun have(c: Char): Boolean = index(c) != 0  // index가 0이면 받침 없는 것임
     }
+}
+
+// 초성, 중성, 종성 셋 중 둘이 같으면 true
+fun Char.similarHangeulTo(other: Char): Boolean {
+    if (this == other)
+        return true
+
+    val thisSoundList = splitHangeulLetter(this)
+    val otherSoundList = splitHangeulLetter(other)
+    val a = thisSoundList[0] == otherSoundList[0]
+    val b = thisSoundList[1] == otherSoundList[1]
+    val c = thisSoundList[2]?.equalsOrBothNull(otherSoundList[2]) ?: false  // why?
+
+    return (!a && b && c) || (a && !b && c) || (a && b && !c)
+}
+
+fun Any?.equalsOrBothNull(other: Any?): Boolean {
+    if (this == null)
+        return other == null
+    return this == other
 }

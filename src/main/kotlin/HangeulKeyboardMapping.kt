@@ -4,16 +4,20 @@ import Hangeul.FinalSound
 
 fun toAlphabets(s: String) : String {
     return s.flatMap { element ->
-        val str = splitHangeulLetter(element)
+        val str = splitHangeulLetterNotNull(element)
         str.map { toAlphabet(it) }
     }.joinToString("")
 }
 
 // ex: '갇' -> ['ㄱ', 'ㅏ', 'ㄷ']
-fun splitHangeulLetter(c: Char) : List<Char> {
-    val charList = mutableListOf(InitSound.of(c), MiddleSound.of(c))
-    FinalSound.of(c)?.let { charList.add(it) }
-    return charList
+fun splitHangeulLetterNotNull(c: Char) : List<Char> {
+    return splitHangeulLetter(c).filterNotNull()
+}
+
+fun splitHangeulLetter(c: Char): List<Char?> {
+    return listOf(
+        InitSound.of(c), MiddleSound.of(c), FinalSound.of(c)
+    )
 }
 
 private fun toAlphabet(c: Char): String {

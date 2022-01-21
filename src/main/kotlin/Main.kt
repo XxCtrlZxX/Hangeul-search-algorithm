@@ -15,37 +15,33 @@ fun main() {
 }
 
 
-fun String.superContains(s: String):
-        Boolean = contains(s) || compareHangeulInitial(s) || containsHangeulAlphabets(s)
+fun String.superContains(other: String):
+        Boolean = contains(other) || containsHangeul(other) || containsHangeulAlphabets(other)
 
 
-fun String.compareHangeulInitial(s: String): Boolean {
-    // 문자열이 모두 초성으로 되어있으면
-    if (s.all { it in 'ㄱ'..'ㅎ' }) {
-        val targetString = this
-        val range = targetString.length - s.length
+fun String.containsHangeul(other: String): Boolean {
+    val range = this.length - other.length
 
-        // 맞는 조합이 하나라도 있으면 return true
-        return (0..range).any { i ->
-            var t = i
-            return@any s.all {
-                when (it) {
-                    in 'ㄱ'..'ㅎ' -> { // 초성은 초성끼리만 비교
-                        val targetInitial = Hangeul.InitSound.of(targetString[t++])
-                        return@all it == targetInitial
-                    }
-                    else -> return@all it == targetString[t++]
+    // 맞는 조합이 하나라도 있으면 return true
+    return (0..range).any { i ->
+        var t = i
+        return@any other.all {
+            when (it) {
+                in 'ㄱ'..'ㅎ' -> { // 초성은 초성끼리만 비교
+                    val targetInitial = Hangeul.InitSound.of(this[t++])
+                    return@all it == targetInitial
                 }
+                in '가'..'힣' -> return@all it.similarHangeulTo(this[t++])
+                else -> return@all it == this[t++]
             }
         }
     }
-    return false
 }
 
 // 한글을 알파벳으로 바꿔서 비교
 // TODO: 기능 추가
-fun String.containsHangeulAlphabets(s: String): Boolean {
+fun String.containsHangeulAlphabets(other: String): Boolean {
     val targetString = toAlphabets(this)
-    val compareString = toAlphabets(s)
+    val compareString = toAlphabets(other)
     return targetString.contains(compareString)
 }
